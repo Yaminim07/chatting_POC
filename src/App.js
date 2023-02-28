@@ -4,6 +4,7 @@ import { ZIM } from 'zego-zim-web';
 import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Map from './Map';
 
 ZIM.create({
   appID: 1928975649,
@@ -80,8 +81,11 @@ function App() {
       </div>
       <Button variant='outlined' onClick={sendMessage}>Send Message</Button>
       <p>{recievedMessage}</p>
+    <Map />
     </div>
   );
 }
+
+
 
 export default App;
