@@ -4,6 +4,9 @@ import { ZIM } from 'zego-zim-web';
 import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import GoogleMapReact from 'google-map-react';
+
+const AnyReactComponent = ({ text }) => <div>{text}</div>;
 
 ZIM.create({
   appID: 1928975649,
@@ -14,6 +17,14 @@ let zim = ZIM.getInstance();
 function App() {
   const [recievedMessage, setReceivedMessage] = useState('');
   const [text, setText] = useState('');
+
+  const defaultProps = {
+    center: {
+      lat: 10.99835602,
+      lng: 77.01502627
+    },
+    zoom: 11
+  };
 
   const handleTextChange = (e) => {
     let value = e.target.value;
@@ -80,6 +91,19 @@ function App() {
       </div>
       <Button variant='outlined' onClick={sendMessage}>Send Message</Button>
       <p>{recievedMessage}</p>
+      <div style={{ height: '100vh', width: '100%' }}>
+      <GoogleMapReact
+        bootstrapURLKeys={{ key: "" }}
+        defaultCenter={defaultProps.center}
+        defaultZoom={defaultProps.zoom}
+      >
+        <AnyReactComponent
+          lat={59.955413}
+          lng={30.337844}
+          text="My Marker"
+        />
+      </GoogleMapReact>
+    </div>
     </div>
   );
 }
