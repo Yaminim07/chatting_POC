@@ -6,7 +6,7 @@ const render = (status) => {
     case Status.FAILURE:
       return <div>error</div>;
     case Status.SUCCESS:
-      return <MyMapComponent center={{ lat: 44, lng: -80 }} zoom={15} />;
+      return <MyMapComponent center={{ lat: 12.972442, lng: 77.580643 }} zoom={15} />;
     default:
       return <div>loading...</div>;
   }
