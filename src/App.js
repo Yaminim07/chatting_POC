@@ -1,9 +1,12 @@
-import logo from './logo.svg';
-import './App.css';
-import { ZIM } from 'zego-zim-web';
-import { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
+import logo from "./logo.svg";
+import "./App.css";
+import { ZIM } from "zego-zim-web";
+import { useEffect, useState } from "react";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import {  useJsApiLoader  } from "@react-google-maps/api";
+
+import GoogleMapComponent from "./Components/GoogleMapComponent";
 
 ZIM.create({
   appID: 1928975649,
@@ -12,21 +15,24 @@ ZIM.create({
 let zim = ZIM.getInstance();
 
 function App() {
-  const [recievedMessage, setReceivedMessage] = useState('');
-  const [text, setText] = useState('');
+  const [recievedMessage, setReceivedMessage] = useState("");
+  const [text, setText] = useState("");
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+  });
 
   const handleTextChange = (e) => {
     let value = e.target.value;
     setText(value);
-  }
+  };
 
   useEffect(() => {
     loginUser();
-  },[])
+  }, []);
 
   const sendMessage = () => {
-    let messageTextObj = {type: 1, message: text};
-    let toUserID = '1234';
+    let messageTextObj = { type: 1, message: text };
+    let toUserID = "1234";
     let config = {
       priority: 1, // Set priority for the message. 1: Low (by default). 2: Medium. 3: High.
     };
@@ -38,48 +44,68 @@ function App() {
       },
     };
     zim
-    .sendMessage(messageTextObj, toUserID, type, config, notification)
-    .then(function ({message}) {
-      // Message sent successfully.
-      // alert('message sent:', message);
-    })
-    .catch(function (err) {
-      // Failed to send the message.
-      // alert('sending failed');
-      console.log('sending failed', err);
-    });
-  }
+      .sendMessage(messageTextObj, toUserID, type, config, notification)
+      .then(function ({ message }) {
+        // Message sent successfully.
+        // alert('message sent:', message);
+      })
+      .catch(function (err) {
+        // Failed to send the message.
+        // alert('sending failed');
+        console.log("sending failed", err);
+      });
+  };
 
   const loginUser = () => {
-    let userInfo = { userID: '123', userName: 'Yaminim' };
-    let token = '04AAAAAGP+2goAEG15ajhrdXV5aHlmNTN6NzUAoFCXDpipDpe9ZXzK0gLPoSUDIUx4PpQPkECMRA5SBiiZtS+35fojiyJ+p+attHKifMUAsBrn/elq+E42gQc9/1SxQJ5bFz7w4MKzxkpQK3z44AKgZQMOZnh+uJi4SHlt2c37VMuBuePYLgeNf9Zl0i3q7PQO3oiLZON9IDGQuy3w7Wx/VxMAlI44eQ0OJtJJOyK0Lb/3IFvuHudAJW3G540=';
-    zim.login(userInfo, token)
-    .then(function () {
+    let userInfo = { userID: "123", userName: "Yaminim" };
+    let token =
+      "04AAAAAGP+2goAEG15ajhrdXV5aHlmNTN6NzUAoFCXDpipDpe9ZXzK0gLPoSUDIUx4PpQPkECMRA5SBiiZtS+35fojiyJ+p+attHKifMUAsBrn/elq+E42gQc9/1SxQJ5bFz7w4MKzxkpQK3z44AKgZQMOZnh+uJi4SHlt2c37VMuBuePYLgeNf9Zl0i3q7PQO3oiLZON9IDGQuy3w7Wx/VxMAlI44eQ0OJtJJOyK0Lb/3IFvuHudAJW3G540=";
+    zim
+      .login(userInfo, token)
+      .then(function () {
         // Login successful.
-        console.log('login successful');
-        zim.on('receivePeerMessage', function (zim, { messageList, fromConversationID }) {
-          console.log('receivePeerMessage', messageList, fromConversationID );
-          let newMsgString = '';
-          messageList.map((item) => {
-            newMsgString = item.message;
-          })
-          setReceivedMessage(newMsgString);
-        });
-    })
-    .catch(function (err) {
+        console.log("login successful");
+        zim.on(
+          "receivePeerMessage",
+          function (zim, { messageList, fromConversationID }) {
+            console.log("receivePeerMessage", messageList, fromConversationID);
+            let newMsgString = "";
+            messageList.map((item) => {
+              newMsgString = item.message;
+            });
+            setReceivedMessage(newMsgString);
+          }
+        );
+      })
+      .catch(function (err) {
         // Login failed.
-        console.log('user login unsuccess');
-    });
-  }
+        console.log("user login unsuccess");
+      });
+  };
 
+  if(!isLoaded) {
+    return (
+      <div>loading...</div>
+    )
+  }
 
   return (
     <div className="App">
       <div style={{ margin: 20 }}>
-      <TextField id="outlined-basic" placeholder='Type here' variant="outlined" value={text} onChange={handleTextChange}/>
+        <TextField
+          id="outlined-basic"
+          placeholder="Type here"
+          variant="outlined"
+          value={text}
+          onChange={handleTextChange}
+        />
       </div>
-      <Button variant='outlined' onClick={sendMessage}>Send Message</Button>
+      <Button variant="outlined" onClick={sendMessage}>
+        Send Message
+      </Button>
       <p>{recievedMessage}</p>
+      
+      <GoogleMapComponent />
     </div>
   );
 }
