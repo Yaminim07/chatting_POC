@@ -1,10 +1,12 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { ZIM } from "zego-zim-web";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import {  useJsApiLoader  } from "@react-google-maps/api";
+import { useJsApiLoader } from "@react-google-maps/api";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 import GoogleMapComponent from "./Components/GoogleMapComponent";
 
@@ -17,6 +19,8 @@ let zim = ZIM.getInstance();
 function App() {
   const [recievedMessage, setReceivedMessage] = useState("");
   const [text, setText] = useState("");
+
+  const pdfRef = useRef();
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
   });
@@ -54,6 +58,9 @@ function App() {
         // alert('sending failed');
         console.log("sending failed", err);
       });
+      const input = document.getElementById('divToPrint');
+      console.log(input);
+      console.log(pdfRef.current);
   };
 
   const loginUser = () => {
@@ -83,29 +90,55 @@ function App() {
       });
   };
 
-  if(!isLoaded) {
-    return (
-      <div>loading...</div>
-    )
+  // const printDocument= () => {
+  //   const jsPdf = new jsPDF({
+  //     orientation: "landscape",
+  //     unit: "in",
+     
+  //   });
+  //   html2canvas(pdfRef.current)
+  //     .then((canvas) => {
+  //       const imgData = canvas.toDataURL("image/jpeg", 1.0);  
+  //       // console.log(ImageData);     
+  //       jsPdf.addImage(imgData, 'JPEG', 0, 0);
+  //       jsPdf.save("download.pdf");
+  //     })
+  //   ;
+  // }
+  const handleGeneratePdf = () => {
+		const doc = new jsPDF('l', 'pt', [ 1080 , 1920]);
+		doc.setFont('Inter-Regular', 'normal');
+		doc.html(pdfRef.current, {
+			async callback(doc) {
+				await doc.save('document');
+			},
+		});
+	};
+
+  if (!isLoaded) {
+    return <div>loading...</div>;
   }
 
   return (
     <div className="App">
-      <div style={{ margin: 20 }}>
-        <TextField
-          id="outlined-basic"
-          placeholder="Type here"
-          variant="outlined"
-          value={text}
-          onChange={handleTextChange}
-        />
+      <Button onClick={handleGeneratePdf}>Generate Pdf</Button>
+      <div ref={pdfRef}>
+        <div style={{ margin: 20 }}>
+          <TextField
+            id="outlined-basic"
+            placeholder="Type here"
+            variant="outlined"
+            value={text}
+            onChange={handleTextChange}
+          />
+        </div>
+        <Button variant="outlined" onClick={sendMessage}>
+          Send Message
+        </Button>
+        <p>{recievedMessage}</p>
+
+        <GoogleMapComponent />
       </div>
-      <Button variant="outlined" onClick={sendMessage}>
-        Send Message
-      </Button>
-      <p>{recievedMessage}</p>
-      
-      <GoogleMapComponent />
     </div>
   );
 }
