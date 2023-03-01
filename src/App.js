@@ -4,9 +4,10 @@ import { ZIM } from "zego-zim-web";
 import { useEffect, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import {  useJsApiLoader  } from "@react-google-maps/api";
+import MyApp from "./Components/Wrapper";
+// import {  useJsApiLoader  } from "@react-google-maps/api";
 
-import GoogleMapComponent from "./Components/GoogleMapComponent";
+// import GoogleMapComponent from "./Components/GoogleMapComponent";
 
 ZIM.create({
   appID: 1928975649,
@@ -17,9 +18,9 @@ let zim = ZIM.getInstance();
 function App() {
   const [recievedMessage, setReceivedMessage] = useState("");
   const [text, setText] = useState("");
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
-  });
+  // const { isLoaded } = useJsApiLoader({
+  //   googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+  // });
 
   const handleTextChange = (e) => {
     let value = e.target.value;
@@ -83,11 +84,11 @@ function App() {
       });
   };
 
-  if(!isLoaded) {
-    return (
-      <div>loading...</div>
-    )
-  }
+  // if(!isLoaded) {
+  //   return (
+  //     <div>loading...</div>
+  //   )
+  // }
 
   return (
     <div className="App">
@@ -104,8 +105,9 @@ function App() {
         Send Message
       </Button>
       <p>{recievedMessage}</p>
-      
-      <GoogleMapComponent />
+
+      {/* <GoogleMapComponent /> */}
+      <MyApp />
     </div>
   );
 }
